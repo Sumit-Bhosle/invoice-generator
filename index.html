@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Generator</title>
+
+    <style>
+        :root {
+            --page-width: 210mm;
+            --page-height: 297mm;
+            --border: 1px solid #000;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 6px;
+            margin: 4px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .form-box {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .page {
+            width: var(--page-width);
+            height: var(--page-height);
+            margin: 20px auto;
+            background: #fff;
+            padding: 12mm;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        td,
+        th {
+            border: var(--border);
+            padding: 6px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .sign-box {
+            height: 70px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .page,
+            .page * {
+                visibility: visible;
+            }
+
+            .page {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-box">
+        <h2>Invoice Details</h2>
+
+        <label>Company Name</label>
+        <input id="company" value="HITANSH ENTERPRISES">
+
+        <label>Phone</label>
+        <input id="phone" value="8169212775">
+
+        <label>Email</label>
+        <input id="email" value="yogeshsurve1980@gmail.com">
+
+        <label>Bill To</label>
+        <input id="billto" placeholder="Client Name">
+
+        <label>Invoice No</label>
+        <input id="invno" placeholder="Invoice No ex: 01,02 etc.">
+
+        <label>Date</label>
+        <input id="date" type="date">
+
+        <label>Item Name</label>
+        <input id="item" placeholder="Item Name">
+
+        <label>Quantity</label>
+        <input id="qty" type="number" placeholder="Qty">
+
+        <label>Unit</label>
+        <input id="unit" value="Box">
+
+        <label>Price per Unit</label>
+        <input id="price" type="number" value="0" placeholder="Price per Unit">
+
+        <label>Page Size</label>
+        <select onchange="setSize(this.value)">
+            <option value="A4">A4</option>
+            <option value="A5">A5</option>
+            <option value="LETTER">Letter</option>
+        </select>
+
+        <br><br>
+        <button onclick="generate()">Generate Invoice</button>
+        
+    </div>
+
+    <!-- INVOICE -->
+    <div class="page" id="invoice">
+        <h1 class="center">Tax<br>Invoice</h1>
+
+        <table>
+            <tr>
+                <td class="bold">
+                    <span id="cname"></span><br><br>
+                    Phone: <span id="cphone"></span>
+                </td>
+                <td>Email: <span id="cemail"></span></td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td width="50%">
+                    <b>Bill To:</b><br>
+                    <span id="cbill"></span>
+                </td>
+                <td width="50%">
+                    <b>Invoice Details:</b><br>
+                    No: <span id="cinv"></span><br>
+                    Date: <span id="cdate"></span>
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr height="30px">
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Price</th>
+                <th>Amount</th>
+            </tr>
+            <tr>
+                <td class="center">1</td>
+                <td id="citem"></td>
+                <td class="center" id="cqty"></td>
+                <td class="center" id="cunit"></td>
+                <td class="right" id="cprice"></td>
+                <td class="right" id="ctotal"></td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td class="right bold">Total :</td>
+                <td class="right bold">₹ <span id="ctotal2"></span></td>
+            </tr>
+            <tr>
+                <td colspan="2"><b>Invoice Amount In Words:</b> <span id="words"></span></td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <b>Terms & Conditions:</b><br>
+                    Thank you for doing business with us.
+                </td>
+                <td class="center">
+                    <b>For <span id="cname2"></span></b><br><br>
+                    <div class="sign-box"></div>
+                    Authorized Signatory
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="center" style="border: #000;">
+        <button onclick="window.print()">Download PDF</button>
+    </div>
+
+    <script>
+        function setSize(size) {
+            if (size == "A4") {
+                document.documentElement.style.setProperty('--page-width', '210mm');
+                document.documentElement.style.setProperty('--page-height', '297mm');
+            }
+            if (size == "A5") {
+                document.documentElement.style.setProperty('--page-width', '148mm');
+                document.documentElement.style.setProperty('--page-height', '210mm');
+            }
+            if (size == "LETTER") {
+                document.documentElement.style.setProperty('--page-width', '216mm');
+                document.documentElement.style.setProperty('--page-height', '279mm');
+            }
+        }
+
+        function generate() {
+            let qty = +qtyInput.value;
+            let price = +priceInput.value;
+        }
+
+        const qtyInput = document.getElementById("qty");
+        const priceInput = document.getElementById("price");
+
+        function generate() {
+            let total = qtyInput.value * priceInput.value;
+
+            cname.textContent = company.value;
+            cname2.textContent = company.value;
+            cphone.textContent = phone.value;
+            cemail.textContent = email.value;
+            cbill.textContent = billto.value;
+            cinv.textContent = invno.value;
+            cdate.textContent = date.value;
+            citem.textContent = item.value;
+            cqty.textContent = qty.value;
+            cunit.textContent = unit.value;
+            cprice.textContent = price.value;
+            ctotal.textContent = total.toFixed(2);
+            ctotal2.textContent = total.toFixed(2);
+            words.textContent = "Rupees " + total.toFixed(0) + " only";
+        }
+    </script>
+
+</body>
+
+</html>
