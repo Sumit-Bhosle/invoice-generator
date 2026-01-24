@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Generator</title>
 
     <style>
@@ -13,12 +14,11 @@
             --text: #1f2937;
 
             --page-width: 210mm;
-            --page-height: 297mm;
             --border: 1px solid #000;
         }
 
         * {
-            box-sizing: border-box
+            box-sizing: border-box;
         }
 
         body {
@@ -28,12 +28,14 @@
             color: var(--text);
         }
 
-        /* ===== LAYOUT ===== */
+        /* =========================
+   LAYOUT (MOBILE FIRST)
+   ========================= */
         .app {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 20px;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 12px;
         }
 
         .card {
@@ -43,7 +45,21 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
         }
 
-        /* ===== FORM ===== */
+        /* =========================
+   DESKTOP LAYOUT
+   ========================= */
+        @media (min-width: 769px) {
+            .app {
+                display: grid;
+                grid-template-columns: minmax(280px, 380px) 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+        }
+
+        /* =========================
+   FORM
+   ========================= */
         .form-box h2 {
             margin: 0 0 10px;
             color: var(--primary);
@@ -64,7 +80,9 @@
             border: 1px solid #d1d5db;
         }
 
-        /* ===== BUTTONS ===== */
+        /* =========================
+   BUTTONS
+   ========================= */
         .actions {
             display: flex;
             gap: 10px;
@@ -82,19 +100,21 @@
 
         .generate {
             background: var(--primary);
-            color: #fff
+            color: #fff;
         }
 
         .download {
             background: #111827;
-            color: #fff
+            color: #fff;
         }
 
-        /* ===== PREVIEW ===== */
+        /* =========================
+   PREVIEW
+   ========================= */
         .preview-wrap {
             display: flex;
             justify-content: center;
-            overflow: auto;
+            overflow-x: auto;
         }
 
         .page {
@@ -103,7 +123,9 @@
             padding: 12mm;
         }
 
-        /* ===== TABLE ===== */
+        /* =========================
+   TABLE
+   ========================= */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -117,22 +139,24 @@
         }
 
         .center {
-            text-align: center
+            text-align: center;
         }
 
         .right {
-            text-align: right
+            text-align: right;
         }
 
         .bold {
-            font-weight: bold
+            font-weight: bold;
         }
 
         .sign-box {
-            height: 70px
+            height: 70px;
         }
 
-        /* ===== PRINT (THE REAL FIX) ===== */
+        /* =========================
+   PRINT
+   ========================= */
         @page {
             size: A4;
             margin: 0;
@@ -144,29 +168,19 @@
             body {
                 margin: 0 !important;
                 padding: 0 !important;
-                width: 100%;
-                height: 100%;
             }
 
-            /* hide UI */
             .form-box {
                 display: none !important;
             }
 
-            /* reset preview container */
             .preview-wrap {
-                display: block !important;
                 overflow: visible !important;
             }
 
-            /* PERFECT CENTERING */
             .page {
                 margin: 0 auto !important;
-                left: 0 !important;
-                right: 0 !important;
                 transform: none !important;
-                page-break-before: avoid !important;
-                page-break-after: avoid !important;
                 page-break-inside: avoid !important;
             }
 
@@ -179,26 +193,6 @@
 
             * {
                 box-shadow: none !important;
-            }
-        }
-
-        /* ===== MOBILE ===== */
-        @media(max-width:900px) {
-            .app {
-                grid-template-columns: 1fr
-            }
-
-            .preview-wrap {
-                transform: scale(.92);
-                transform-origin: top center;
-            }
-
-            .actions {
-                position: sticky;
-                bottom: 0;
-                background: #fff;
-                padding: 10px;
-                box-shadow: 0 -5px 20px rgba(0, 0, 0, .1);
             }
         }
     </style>
@@ -216,10 +210,10 @@
             <input id="company" value="HITANSH ENTERPRISES">
 
             <label>Phone</label>
-            <input id="phone" value="8169212775">
+            <input id="phone">
 
             <label>Email</label>
-            <input id="email" value="yogeshsurve1980@gmail.com">
+            <input id="email">
 
             <label>Bill To</label>
             <input id="billto">
@@ -242,25 +236,16 @@
             <label>Price per Unit</label>
             <input id="price" type="number" value="0">
 
-            <label>Page Size</label>
-            <select onchange="setSize(this.value)">
-                <option value="A4">A4</option>
-                <option value="A5">A5</option>
-                <option value="LETTER">Letter</option>
-            </select>
-
             <div class="actions">
                 <button class="generate" onclick="generate()">Generate</button>
-                <button class="download" onclick="downloadPDF()">Download PDF</button>
+                <button class="download" onclick="window.print()">Download PDF</button>
             </div>
 
-            <small style="opacity:.6">
-                Print tip: turn OFF “Headers & Footers”
-            </small>
+            <small style="opacity:.6">Print tip: turn OFF “Headers & Footers”</small>
         </div>
 
         <!-- PREVIEW -->
-        <div class="card preview-wrap center">
+        <div class="card preview-wrap">
             <div class="page" id="invoice">
 
                 <h1 class="center">Tax<br>Invoice</h1>
@@ -334,15 +319,10 @@
 
             </div>
         </div>
+
     </div>
 
     <script>
-        function setSize(size) {
-            if (size === "A4") { document.documentElement.style.setProperty('--page-width', '210mm') }
-            if (size === "A5") { document.documentElement.style.setProperty('--page-width', '148mm') }
-            if (size === "LETTER") { document.documentElement.style.setProperty('--page-width', '216mm') }
-        }
-
         function generate() {
             const total = qty.value * price.value;
 
@@ -361,27 +341,6 @@
             ctotal2.textContent = total.toFixed(2);
             words.textContent = "Rupees " + Math.round(total) + " only";
         }
-
-        /* 🚀 AUTO-SCALE TO SINGLE PAGE */
-        function downloadPDF() {
-            const page = document.getElementById("invoice");
-            const pageHeight = page.scrollHeight;
-            const A4Px = 1122; // safe A4 height
-
-            let scale = 1;
-            if (pageHeight > A4Px) {
-                scale = A4Px / pageHeight;
-            }
-
-            page.style.transform = scale < 1 ? `scale(${scale})` : "none";
-            page.style.transformOrigin = "top center";
-
-            setTimeout(() => {
-                window.print();
-                page.style.transform = "none";
-            }, 50);
-        }
-
     </script>
 
 </body>
