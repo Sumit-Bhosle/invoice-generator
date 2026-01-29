@@ -26,7 +26,7 @@ body{
   color:var(--text);
 }
 
-/* ===== LAYOUT (MOBILE FIRST) ===== */
+/* ===== LAYOUT ===== */
 .app{
   display:flex;
   flex-direction:column;
@@ -34,14 +34,6 @@ body{
   padding:12px;
 }
 
-.card{
-  background:var(--card);
-  border-radius:12px;
-  padding:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-}
-
-/* ===== DESKTOP ===== */
 @media (min-width: 769px){
   .app{
     display:grid;
@@ -49,6 +41,13 @@ body{
     gap:20px;
     padding:20px;
   }
+}
+
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
 /* ===== FORM ===== */
@@ -74,15 +73,36 @@ input{
 }
 
 button{
-  flex:1;
-  padding:10px;
+  padding:8px 10px;
   border:none;
-  border-radius:8px;
+  border-radius:6px;
   cursor:pointer;
 }
 
 .generate{background:var(--primary);color:#fff}
 .download{background:#111827;color:#fff}
+
+/* ===== ITEM LIST (FORM) ===== */
+#itemList{
+  margin-top:10px;
+  font-size:13px;
+}
+
+.item-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#f1f5f9;
+  padding:6px 8px;
+  border-radius:6px;
+  margin-bottom:5px;
+}
+
+.item-row button{
+  background:#ef4444;
+  color:#fff;
+  font-size:12px;
+}
 
 /* ===== PREVIEW ===== */
 .preview-wrap{
@@ -99,8 +119,7 @@ button{
   padding:12mm;
   display:flex;
   flex-direction:column;
-
-   border: 1px solid #000;
+  border:1px solid #000;
 }
 
 /* ===== TABLE ===== */
@@ -108,8 +127,6 @@ table{
   width:100%;
   border-collapse:collapse;
   font-size:14px;
-
-  
 }
 
 td,th{
@@ -176,12 +193,17 @@ td,th{
 <label>Price</label>
 <input id="itemPrice" type="number">
 
-<button onclick="addItem()" style="margin-top:10px">➕ Add Item</button>
+<button onclick="addItem()" style="margin-top:10px;background:var(--primary);color:#fff">➕ Add Item</button>
+
+<div id="itemList"></div>
 
 <div class="actions">
-<button class="generate" onclick="renderInvoice()">Generate</button>
 <button class="download" onclick="window.print()">Download PDF</button>
 </div>
+
+<small style="opacity:.6">
+Live preview enabled • No need to click Generate
+</small>
 </div>
 
 <!-- PREVIEW -->
@@ -231,7 +253,7 @@ Phone: <span id="cphone"></span>
 </tr>
 </table>
 
-<!-- FOOTER (STICKS TO BOTTOM) -->
+<!-- FOOTER -->
 <div style="margin-top:auto">
 <table>
 <tr>
@@ -256,23 +278,46 @@ Authorized Signatory
 <script>
 const items=[];
 
+/* live field updates */
+["company","phone","email","billto","invno","date"].forEach(id=>{
+  document.getElementById(id).addEventListener("input", renderInvoice);
+});
+
 function addItem(){
-  if(!itemName.value||!itemQty.value||!itemPrice.value) return;
+  if(!itemName.value || !itemQty.value || !itemPrice.value) return;
+
   items.push({
     name:itemName.value,
     qty:+itemQty.value,
     price:+itemPrice.value
   });
+
   itemName.value=itemQty.value=itemPrice.value="";
+  renderAll();
+}
+
+function deleteItem(i){
+  items.splice(i,1);
+  renderAll();
+}
+
+function renderItemList(){
+  itemList.innerHTML = items.length
+    ? items.map((i,idx)=>`
+      <div class="item-row">
+        <span>${i.name} (${i.qty} × ₹${i.price})</span>
+        <button onclick="deleteItem(${idx})">✕</button>
+      </div>`).join("")
+    : "<em>No items added</em>";
 }
 
 function renderInvoice(){
-  cname.textContent=cname2.textContent=company.value;
-  cphone.textContent=phone.value;
-  cemail.textContent=email.value;
-  cbill.textContent=billto.value;
-  cinv.textContent=invno.value;
-  cdate.textContent=date.value;
+  cname.textContent = cname2.textContent = company.value || "";
+  cphone.textContent = phone.value || "";
+  cemail.textContent = email.value || "";
+  cbill.textContent = billto.value || "";
+  cinv.textContent = invno.value || "";
+  cdate.textContent = date.value || "";
 
   let total=0;
   itemsBody.innerHTML="";
@@ -280,18 +325,26 @@ function renderInvoice(){
     const amt=i.qty*i.price;
     total+=amt;
     itemsBody.innerHTML+=`
-    <tr>
-      <td class="center">${idx+1}</td>
-      <td>${i.name}</td>
-      <td class="center">${i.qty}</td>
-      <td class="right">${i.price}</td>
-      <td class="right">${amt.toFixed(2)}</td>
-    </tr>`;
+      <tr>
+        <td class="center">${idx+1}</td>
+        <td>${i.name}</td>
+        <td class="center">${i.qty}</td>
+        <td class="right">${i.price}</td>
+        <td class="right">${amt.toFixed(2)}</td>
+      </tr>`;
   });
 
   grandTotal.textContent=total.toFixed(2);
-  words.textContent="Rupees "+Math.round(total)+" only";
+  words.textContent=total ? "Rupees "+Math.round(total)+" only" : "";
 }
+
+function renderAll(){
+  renderItemList();
+  renderInvoice();
+}
+
+/* initial */
+renderAll();
 </script>
 
 </body>
