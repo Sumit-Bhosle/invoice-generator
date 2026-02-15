@@ -136,11 +136,16 @@ table{
   font-size:14px;
 }
 
+
 td, th {
   border-left: 1px solid #000;
   border-right: 1px solid #000;
   border-bottom: 1px solid #000;
   border-top: 1px solid #000;
+}
+
+#itemsBody td{
+    padding-top: 15px;
 }
 
 /* Remove top border from first row in each table */
@@ -149,10 +154,13 @@ table tr:first-child th {
   border-top: none;
 } */
 
+
 .center{text-align:center}
 .right{text-align:right}
 .bold{font-weight:bold}
-.sign-box{height:70px}
+.sign-box{height:50px}
+
+
 
 /* ===== PRINT ===== */
 @page{
@@ -254,7 +262,7 @@ Phone: <span id="cphone"></span>
 <th>#</th><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th>
 </tr>
 </thead>
-<tbody id="itemsBody"></tbody>
+<tbody  id="itemsBody"></tbody>
 </table>
 <!-- BOTTOM SECTION (TOTAL + FOOTER) -->
 <div style="margin-top:auto ">
