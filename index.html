@@ -1,431 +1,490 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice Generator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
 
-<style>
-:root{
-  --primary:#2563eb;
-  --bg:#f4f6fb;
-  --card:#ffffff;
-  --text:#1f2937;
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f4f6fb;
+            --card: #ffffff;
+            --text: #1f2937;
 
-  --page-width:210mm;
-  --page-height:270mm;
-  --border:1px solid #000;
-}
+            --page-width: 210mm;
+            --page-height: 270mm;
+            --border: 1px solid #000;
+        }
 
-*{box-sizing:border-box}
+        * {
+            box-sizing: border-box
+        }
 
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
 
-/* ===== LAYOUT ===== */
-.app{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  padding:12px;
-}
+        /* ===== LAYOUT ===== */
+        .app {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 12px;
+        }
 
-@media (min-width: 769px){
-  .app{
-    display:grid;
-    grid-template-columns:minmax(280px,380px) 1fr;
-    gap:20px;
-    padding:20px;
-  }
-}
+        @media (min-width: 769px) {
+            .app {
+                display: grid;
+                grid-template-columns: minmax(280px, 380px) 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+        }
 
-.card{
-  background:var(--card);
-  border-radius:12px;
-  padding:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-}
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        }
 
-/* ===== FORM ===== */
-label{
-  font-size:13px;
-  margin-top:8px;
-  display:block;
-}
+        /* ===== FORM ===== */
+        label {
+            font-size: 13px;
+            margin-top: 8px;
+            display: block;
+        }
 
-input{
-  width:100%;
-  padding:8px;
-  margin-top:4px;
-  border-radius:6px;
-  border:1px solid #d1d5db;
-}
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+        }
 
-/* ===== BUTTONS ===== */
-.actions{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
+        /* ===== BUTTONS ===== */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
 
-button{
-  padding:8px 10px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
+        button {
+            padding: 8px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-.generate{background:var(--primary);color:#fff}
-.download{background:#111827;color:#fff}
+        .generate {
+            background: var(--primary);
+            color: #fff
+        }
 
-/* ===== ITEM LIST (FORM) ===== */
-#itemList{
-  margin-top:10px;
-  font-size:13px;
-}
+        .download {
+            background: #111827;
+            color: #fff
+        }
 
-.item-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#f1f5f9;
-  padding:6px 8px;
-  border-radius:6px;
-  margin-bottom:5px;
-}
+        /* ===== ITEM LIST (FORM) ===== */
+        #itemList {
+            margin-top: 10px;
+            font-size: 13px;
+        }
 
-.item-row button{
-  background:#ef4444;
-  color:#fff;
-  font-size:12px;
-}
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 6px 8px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
 
-#itemsBody{
-    padding-top: 10px;
-}
+        .item-row button {
+            background: #ef4444;
+            color: #fff;
+            font-size: 12px;
+        }
 
-
-/* ===== PREVIEW ===== */
-.preview-wrap{
-  display:flex;
-  justify-content:center;
-  overflow-x:auto;
-}
-
-/* ===== INVOICE PAGE ===== */
-.page{
-  width:var(--page-width);
-  height:var(--page-height);
-  background:#fff;
-  padding:12mm;
-  display:flex;
-  flex-direction:column;
-  border:2px solid #000;
-}
-
-/* ===== TABLE ===== */
+        #itemsBody {
+            padding-top: 10px;
+        }
 
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
+        /* ===== PREVIEW ===== */
+        .preview-wrap {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
 
+        /* ===== INVOICE PAGE ===== */
+        .page {
+            width: var(--page-width);
+            height: var(--page-height);
+            background: #fff;
+            padding: 12mm;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #000000;
+        }
 
-td, th {
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
-  border-top: 1px solid #000;
-}
-
-#itemsBody td{
-    padding-top: 15px;
-}
-
-/* Remove top border from first row in each table */
-/* table tr:first-child td,
-table tr:first-child th {
-  border-top: none;
-} */
-
-
-.center{text-align:center}
-.right{text-align:right}
-.bold{font-weight:bold}
-.sign-box{height:50px}
+        #cname {
+            font-size: 25px;
+            line-height: 1.5;
+        }
 
 
 
-/* ===== PRINT ===== */
-@page{
-  size:A4;
-  margin:0;
-}
+        /* ===== TABLE ===== */
 
-@media print{
-  body{margin:0}
-  .form-box{display:none}
-  .preview-wrap{overflow:visible}
-  .page{margin:0 auto}
-  *{box-shadow:none !important}
-}
-</style>
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+
+        td,
+        th {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            border-top: 1px solid #000;
+        }
+
+        #itemsBody td {
+            padding-top: 15px;
+        }
+
+
+        .center {
+            text-align: center
+        }
+
+        .right {
+            text-align: right
+        }
+
+        .bold {
+            font-weight: bold
+        }
+
+        .sign-box {
+            height: 50px
+        }
+        .signature-img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            opacity: 2;
+        }
+
+
+
+        /* ===== PRINT ===== */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                margin: 0
+            }
+
+            .form-box {
+                display: none
+            }
+
+            .preview-wrap {
+                overflow: visible
+            }
+
+            .page {
+                margin: 0 auto
+            }
+
+            * {
+                box-shadow: none !important
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="app">
+    <div class="app">
 
-<!-- FORM -->
-<div class="card form-box">
-<h3>Invoice Details</h3>
+        <!-- FORM -->
+        <div class="card form-box">
+            <h3>Invoice Details</h3>
 
-<label>Company</label>
-<input id="company" value="HITANSH ENTERPRISES">
+            <label>Service Provider Name</label>
+            <input id="company" value="Hitansh Enterprises">
 
-<label>Phone</label>
-<input id="phone" type="tel" value="+91 8169212775">
 
-<label>Email</label>
-<input id="email" type="email" value="yogeshsurve1980@gmail.com">
+            <label>Bill To</label>
+            <input id="billto">
 
-<label>Bill To</label>
-<input id="billto">
+            <label>Invoice No</label>
+            <input id="invno">
 
-<label>Invoice No</label>
-<input id="invno">
+            <label>Date</label>
+            <input id="date" type="date">
 
-<label>Date</label>
-<input id="date" type="date">
+            <hr>
 
-<hr>
+            <h4>Add Item</h4>
+            <label>Item Name</label>
+            <input id="itemName">
 
-<h4>Add Item</h4>
-<label>Item Name</label>
-<input id="itemName">
+            <label>Qty</label>
+            <input id="itemQty" type="number">
 
-<label>Qty</label>
-<input id="itemQty" type="number">
+            <label>Price</label>
+            <input id="itemPrice" type="number">
 
-<label>Price</label>
-<input id="itemPrice" type="number">
+            <button onclick="addItem()" style="margin-top:10px;background:var(--primary);color:#fff">➕ Add Item</button>
 
-<button onclick="addItem()" style="margin-top:10px;background:var(--primary);color:#fff">➕ Add Item</button>
+            <div id="itemList"></div>
 
-<div id="itemList"></div>
+            <div class="actions">
+                <button class="download" onclick="window.print()">Download PDF</button>
+            </div>
 
-<div class="actions">
-<button class="download" onclick="window.print()">Download PDF</button>
-</div>
+            <small style="opacity:.6; padding-top:10px; display:block">
+                Live preview enabled
+            </small>
+        </div>
 
-<small style="opacity:.6">
-Live preview enabled • No need to click Generate
-</small>
-</div>
+        <!-- PREVIEW -->
+        <div class="card preview-wrap">
+            <div class="page" id="invoice">
 
-<!-- PREVIEW -->
-<div class="card preview-wrap">
-<div class="page" id="invoice">
+                <!-- HEADER -->
+                <div>
+                    <h1 class="center">INVOICE</h1>
 
-<!-- HEADER -->
-<div>
-<h1 class="center">Tax<br>Invoice</h1>
+                    <table>
+                        <tr>
+                            <td class="bold" style="padding:5px">
+                                <span id="cname"></span><br>
+                                Eksar, Borivali West<br>
+                                Maharashtra - 400091<br>
+                                
+                            </td>
+                            <td class="center bold">
+                                TAX INVOICE
+                            </td>
+                        </tr>
+                    </table>
 
-<table>
-<tr>
-<td class="bold">
-<span id="cname"></span><br>
-Phone: <span id="cphone"></span>
-</td>
-<td>Email: <span id="cemail"></span></td>
-</tr>
-</table>
+                    <table>
+                        <tr>
+                            <td style="padding:5px"><b>Bill To:</b><br><span id="cbill"></span></td>
+                            <td style="padding:5px"><b>Invoice:</b><br>No: <span id="cinv"></span><br>Date: <span
+                                    id="cdate"></span></td>
+                        </tr>
+                    </table>
+                </div>
 
-<table>
-<tr>
-<td><b>Bill To:</b><br><span id="cbill"></span></td>
-<td><b>Invoice:</b><br>No: <span id="cinv"></span><br>Date: <span id="cdate"></span></td>
-</tr>
-</table>
-</div>
+                <!-- ITEMS -->
+                <table style="margin-top:10px">
+                    <thead>
+                        <tr>
+                            <th style="padding:5px">#</th>
+                            <th style="padding:5px">Item</th>
+                            <th style="padding:5px">Qty</th>
+                            <th style="padding:5px">Price</th>
+                            <th style="padding:5px">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody"></tbody>
+                </table>
 
-<!-- ITEMS -->
-<table style="margin-top:10px">
-<thead>
-<tr>
-<th>#</th><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th>
-</tr>
-</thead>
-<tbody  id="itemsBody"></tbody>
-</table>
-<!-- BOTTOM SECTION (TOTAL + FOOTER) -->
-<div style="margin-top:auto ">
+                <div style="flex:1; border-left:1px solid #000; border-right:1px solid #000;"></div>
 
-  <!-- TOTAL -->
-  <table>
-  <tr>
-  <td class="right bold">Total :</td>
-  <td class="right bold">₹ <span id="grandTotal">0.00</span></td>
-  </tr>
-  <tr>
-  <td colspan="2"><b>Amount in Words:</b> <span id="words"></span></td>
-  </tr>
-  </table>
+                <!-- BOTTOM SECTION (TOTAL + FOOTER) -->
+                <div style="margin-top:auto">
 
-  <!-- FOOTER -->
-  <table style="margin-top:10px">
-  <tr>
-  <td>
-  <b>Terms:</b><br>
-  Thank you for doing business with us.
-  </td>
-  <td class="center">
-  <b>For <span id="cname2"></span></b><br><br>
-  <div class="sign-box"></div>
-  Authorized Signatory
-  </td>
-  </tr>
-  </table>
+                    <!-- TOTAL -->
+                    <table>
+                        <tr>
+                            <td class="right bold" style="padding:5px">Total :</td>
+                            <td class="right bold" style="padding:5px">₹ <span id="grandTotal">0.00</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding:5px"><b>Amount in Words:</b> <span id="words"></span></td>
+                        </tr>
+                    </table>
 
-</div>
+                    <!-- FOOTER -->
+                    <table style="margin-top:10px">
+                        <tr>
+                            <td style="padding:5px">
+                                <b>Terms & Notes:</b><br>
+                                • TDS @10% applicable under Section 194J (if deducted).<br>
+                                • TDS certificate (Form 16A) to be provided after filing.<br>
+                                • Payment due as per agreed milestone terms.<br>
+                                • No GST applicable (Below threshold limit).
+                            </td>
+                            <td class="center" style="padding:5px">
+                                <b>For <span id="cname2"></span></b><br><br>
 
-</div>
-</div>
+                                <div class="sign-box">
+                                    <!-- <img src="signature.png" class="signature-img" alt=""> -->
+                                </div>
 
-</div>
+                                Authorized Signatory
+                            </td>
+                        </tr>
+                    </table>
 
-<script>
-const items=[];
+                </div>
 
-/* live field updates */
-["company","phone","email","billto","invno","date"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", renderInvoice);
-});
 
-function addItem(){
-  if(!itemName.value || !itemQty.value || !itemPrice.value) return;
+            </div>
+        </div>
 
-  items.push({
-    name:itemName.value,
-    qty:+itemQty.value,
-    price:+itemPrice.value
-  });
+    </div>
 
-  itemName.value=itemQty.value=itemPrice.value="";
-  renderAll();
-}
+    <script>
+        const items = [];
 
-function deleteItem(i){
-  items.splice(i,1);
-  renderAll();
-}
+        /* live field updates */
+        ["company", "billto", "invno", "date"].forEach(id => {
+            document.getElementById(id).addEventListener("input", renderInvoice);
+        });
 
-function renderItemList(){
-  itemList.innerHTML = items.length
-    ? items.map((i,idx)=>`
+        function addItem() {
+            if (!itemName.value || !itemQty.value || !itemPrice.value) return;
+
+            items.push({
+                name: itemName.value,
+                qty: +itemQty.value,
+                price: +itemPrice.value
+            });
+
+            itemName.value = itemQty.value = itemPrice.value = "";
+            renderAll();
+        }
+
+        function deleteItem(i) {
+            items.splice(i, 1);
+            renderAll();
+        }
+
+        function renderItemList() {
+            itemList.innerHTML = items.length
+                ? items.map((i, idx) => `
       <div class="item-row">
         <span>${i.name} (${i.qty} × ₹${i.price})</span>
         <button onclick="deleteItem(${idx})">✕</button>
       </div>`).join("")
-    : "<em>No items added</em>";
-}
+                : "<em>No items added</em>";
+        }
 
 
-function numberToWords(num) {
-  if (num === 0) return "Zero";
+        function numberToWords(num) {
+            if (num === 0) return "Zero";
 
-  const a = [
-    "", "One", "Two", "Three", "Four", "Five", "Six", "Seven",
-    "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen",
-    "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
-  ];
+            const a = [
+                "", "One", "Two", "Three", "Four", "Five", "Six", "Seven",
+                "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen",
+                "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+            ];
 
-  const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+            const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
 
-  function inWords(n) {
-    let str = "";
+            function inWords(n) {
+                let str = "";
 
-    if (n > 19) {
-      str += b[Math.floor(n / 10)] + " " + a[n % 10];
-    } else {
-      str += a[n];
-    }
+                if (n > 19) {
+                    str += b[Math.floor(n / 10)] + " " + a[n % 10];
+                } else {
+                    str += a[n];
+                }
 
-    return str.trim();
-  }
+                return str.trim();
+            }
 
-  function convert(n) {
-    let result = "";
+            function convert(n) {
+                let result = "";
 
-    if (n >= 100000) {
-      result += convert(Math.floor(n / 100000)) + " Lakh ";
-      n %= 100000;
-    }
+                if (n >= 100000) {
+                    result += convert(Math.floor(n / 100000)) + " Lakh ";
+                    n %= 100000;
+                }
 
-    if (n >= 1000) {
-      result += convert(Math.floor(n / 1000)) + " Thousand ";
-      n %= 1000;
-    }
+                if (n >= 1000) {
+                    result += convert(Math.floor(n / 1000)) + " Thousand ";
+                    n %= 1000;
+                }
 
-    if (n >= 100) {
-      result += a[Math.floor(n / 100)] + " Hundred ";
-      n %= 100;
-    }
+                if (n >= 100) {
+                    result += a[Math.floor(n / 100)] + " Hundred ";
+                    n %= 100;
+                }
 
-    if (n > 0) {
-      result += inWords(n);
-    }
+                if (n > 0) {
+                    result += inWords(n);
+                }
 
-    return result.trim();
-  }
+                return result.trim();
+            }
 
-  return convert(num);
-}
+            return convert(num);
+        }
 
-function renderInvoice(){
-  cname.textContent = cname2.textContent = company.value || "";
-  cphone.textContent = phone.value || "";
-  cemail.textContent = email.value || "";
-  cbill.textContent = billto.value || "";
-  cinv.textContent = invno.value || "";
-  cdate.textContent = date.value || "";
+        function renderInvoice() {
+            cname.textContent = cname2.textContent = company.value || "";
+            //   cphone.textContent = phone.value || "";
+            //   cemail.textContent = email.value || "";
+            cbill.textContent = billto.value || "";
+            cinv.textContent = invno.value || "";
+            cdate.textContent = date.value || "";
 
-  let total=0;
-  itemsBody.innerHTML="";
-  items.forEach((i,idx)=>{
-    const amt=i.qty*i.price;
-    total+=amt;
-    itemsBody.innerHTML+=`
+            let total = 0;
+            itemsBody.innerHTML = "";
+            items.forEach((i, idx) => {
+                const amt = i.qty * i.price;
+                total += amt;
+                itemsBody.innerHTML += `
       <tr>
-        <td class="center">${idx+1}</td>
+        <td class="center">${idx + 1}</td>
         <td>${i.name}</td>
         <td class="center">${i.qty}</td>
         <td class="right">${i.price}</td>
         <td class="right">${amt.toFixed(2)}</td>
       </tr>`;
-  });
+            });
 
-  grandTotal.textContent=total.toFixed(2);
-  words.textContent = total 
-  ? "" + numberToWords(Math.round(total)) + " Rupees Only"
-  : "";
+            grandTotal.textContent = total.toFixed(2);
+            words.textContent = total
+                ? "" + numberToWords(Math.round(total)) + " Rupees Only"
+                : "";
 
-}
+        }
 
-function renderAll(){
-  renderItemList();
-  renderInvoice();
-}
+        function renderAll() {
+            renderItemList();
+            renderInvoice();
+        }
 
-/* initial */
-renderAll();
-</script>
+        /* initial */
+        renderAll();
+    </script>
 
 </body>
+
 </html>
